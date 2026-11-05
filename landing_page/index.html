@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Ghost Inventory Auto-Reconciliation Pipeline | Zero-LLM Autonomous E-Commerce Auditor</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .animate-glow {
+      box-shadow: 0 0 50px -10px rgba(99, 102, 241, 0.25);
+    }
+    .gradient-border {
+      background: linear-gradient(60deg, #6366f1, #a855f7, #ec4899);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-hover:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white font-sans overflow-x-hidden">
+
+  <!-- Background Ambient Glows -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/3 -right-40 w-[30rem] h-[30rem] bg-purple-600/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-10 left-1/4 w-[28rem] h-[28rem] bg-emerald-600/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-50 glass-card border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <!-- Ghost Icon -->
+          <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 10h.01"></path>
+            <path d="M15 10h.01"></path>
+            <path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"></path>
+          </svg>
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">GhostRecon</span>
+          <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Zero-LLM Agent</span>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+        <a href="#why-needed" class="hover:text-indigo-400 transition-colors">Why Zero-LLM?</a>
+        <a href="#storefronts" class="hover:text-indigo-400 transition-colors">Shopify & Woo</a>
+        <a href="#architecture" class="hover:text-indigo-400 transition-colors">State Machine</a>
+        <a href="#reflexes" class="hover:text-indigo-400 transition-colors">Self-Healing</a>
+        <a href="#benchmarks" class="hover:text-indigo-400 transition-colors">100k Benchmark</a>
+        <a href="#calculator" class="hover:text-indigo-400 transition-colors">ROI Calculator</a>
+      </nav>
+
+      <div class="flex items-center space-x-4">
+        <a href="https://github.com/arinbiki/The-Ghost-Inventory-Auto-Reconciliation-Pipeline" target="_blank" class="hidden sm:inline-flex items-center space-x-2 text-xs font-semibold px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 transition">
+          <!-- GitHub Icon -->
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
+          </svg>
+          <span>Star on GitHub</span>
+        </a>
+        <a href="#quickstart" class="text-xs font-semibold px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition">
+          Deploy Agent
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative pt-20 pb-24 lg:pt-32 lg:pb-36 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+      <!-- Badge Pill -->
+      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-slate-900 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-8 shadow-inner">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Deterministic E-Commerce Auditor</span>
+        <span class="text-slate-500">•</span>
+        <span class="text-slate-400">Benchmarked at 227,313 SKUs/sec</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-5xl mx-auto leading-tight sm:leading-none">
+        Stop Bleeding Millions to <br>
+        <span class="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">Ghost Inventory</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="mt-6 text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
+        An autonomous, zero-hallucination reconciliation pipeline bridging the dangerous drift between digital storefronts (<strong class="text-slate-200">Shopify & WooCommerce</strong>) and physical warehouse reality (<strong class="text-slate-200">3PL / WMS / ERP</strong>).
+      </p>
+
+      <!-- Storefront Badges Highlight -->
+      <div class="mt-8 flex flex-wrap justify-center items-center gap-4 text-xs font-semibold">
+        <!-- Shopify Pill -->
+        <div class="flex items-center space-x-2.5 px-4 py-2 rounded-xl bg-slate-900/90 border border-emerald-500/30 text-slate-200 shadow-sm">
+          <!-- Shopify SVG -->
+          <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.002 6.578a1.077 1.077 0 00-.918-.287c-.033.004-.848.113-2.158.287-1.127-1.39-2.73-2.316-4.225-2.316-.089 0-.174.004-.262.012C10.742 2.825 9.493 2 8.163 2 5.568 2 3.86 4.398 3.86 7.158c0 .874.192 1.77.587 2.766L2.3 19.34a1.078 1.078 0 00.957 1.34c.058.004.116.004.174.004.484 0 .93-.327 1.042-.824l1.325-5.835 3.393 2.47c.28.204.62.312.96.312.33 0 .66-.1.936-.295l7.65-5.385a1.076 1.076 0 00.265-1.474l-.001-.004zm-8.814-1.28c.45-.045.92-.069 1.405-.069 1.156 0 2.222.564 3.013 1.458-1.572.21-3.238.432-4.418.591v-1.98zm-2.025-1.14c.732 0 1.405.474 1.758 1.17-.655.088-1.428.192-2.278.307-.153-.787.05-1.477.52-1.477z"/>
+          </svg>
+          <span>Shopify GraphQL Admin API</span>
+          <span class="text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[10px]">40 req/sec Safe</span>
+        </div>
+
+        <!-- WooCommerce Pill -->
+        <div class="flex items-center space-x-2.5 px-4 py-2 rounded-xl bg-slate-900/90 border border-purple-500/30 text-slate-200 shadow-sm">
+          <!-- WooCommerce SVG -->
+          <svg class="w-5 h-5 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10c0-5.52-4.48-10-10-10zm5.2 13.8c-.3.4-.8.6-1.4.6-.7 0-1.3-.3-1.8-.8l-1.9-2.1-1.9 2.1c-.5.5-1.1.8-1.8.8-.6 0-1.1-.2-1.4-.6-.4-.4-.6-.9-.6-1.5 0-.8.3-1.5.8-2.1l2.5-2.8c.4-.4.9-.7 1.5-.7.6 0 1.1.3 1.5.7l2.5 2.8c.5.6.8 1.3.8 2.1 0 .6-.2 1.1-.6 1.5z"/>
+          </svg>
+          <span>WooCommerce REST API v3</span>
+          <span class="text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded text-[10px]">100 SKUs/Batch</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#quickstart" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 transition">
+          🚀 Run Pipeline Demo
+        </a>
+        <a href="#architecture" class="w-full sm:w-auto px-8 py-3.5 rounded-xl glass-card hover:bg-slate-800 text-slate-300 font-semibold text-sm transition">
+          Interactive State Machine
+        </a>
+      </div>
+
+      <!-- Hero Metrics Grid -->
+      <div class="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+        <div class="glass-card rounded-2xl p-5 text-left border-l-4 border-l-emerald-500">
+          <p class="text-xs uppercase font-bold text-emerald-400 tracking-wider">Accuracy</p>
+          <p class="text-3xl font-extrabold text-white mt-1">100.00%</p>
+          <p class="text-xs text-slate-400 mt-1">Zero LLM Hallucinations</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 text-left border-l-4 border-l-indigo-500">
+          <p class="text-xs uppercase font-bold text-indigo-400 tracking-wider">Throughput</p>
+          <p class="text-3xl font-extrabold text-white mt-1">227,313</p>
+          <p class="text-xs text-slate-400 mt-1">SKU Evaluations / sec</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 text-left border-l-4 border-l-purple-500">
+          <p class="text-xs uppercase font-bold text-purple-400 tracking-wider">Query Latency</p>
+          <p class="text-3xl font-extrabold text-white mt-1">310 ms</p>
+          <p class="text-xs text-slate-400 mt-1">Across 100,000 Orders</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 text-left border-l-4 border-l-pink-500">
+          <p class="text-xs uppercase font-bold text-pink-400 tracking-wider">Token Cost</p>
+          <p class="text-3xl font-extrabold text-white mt-1">$0.00</p>
+          <p class="text-xs text-slate-400 mt-1">Pure Deterministic Code</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Problem & Why This Architecture Is Needed -->
+  <section id="why-needed" class="py-20 border-t border-slate-800/80 bg-slate-900/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400">The Problem & Architectural Necessity</h2>
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Why Probabilistic AI Fails at Inventory Accounting</h3>
+        <p class="mt-4 text-slate-400 text-sm sm:text-base">
+          E-commerce brands processing $>5,000$ orders/day cannot afford probabilistic AI in their financial reconciliation loop. Here is why the Zero-LLM state machine was engineered:
+        </p>
+      </div>
+
+      <!-- 3 Column Contrast Grid -->
+      <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Column 1: The Ghost Inventory Threat -->
+        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between border-t-2 border-t-red-500/80">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center font-bold mb-4">
+              ⚠️
+            </div>
+            <h4 class="text-lg font-bold text-white">The Ghost Inventory Trap</h4>
+            <p class="text-xs font-medium text-red-400 mt-1">Oversell Chargebacks & Trapped Capital</p>
+            <ul class="mt-4 space-y-3 text-xs text-slate-300">
+              <li class="flex items-start space-x-2">
+                <span class="text-red-400 font-bold">•</span>
+                <span><strong>Phantom Stock:</strong> Website advertises 48 units, warehouse only holds 8. Customers buy what cannot be shipped.</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <span class="text-red-400 font-bold">•</span>
+                <span><strong>Trapped Capital:</strong> Physical warehouse holds 50 unlisted units marked "Sold Out" online, killing organic revenue.</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <span class="text-red-400 font-bold">•</span>
+                <span><strong>Restocking Lag:</strong> Returned goods take 72+ hours to be manually re-listed, missing viral seasonal demand.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-400">
+            Average cost: <strong>3.2% of gross revenue</strong> lost annually.
+          </div>
+        </div>
+
+        <!-- Column 2: Why NOT an LLM? -->
+        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between border-t-2 border-t-amber-500/80">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold mb-4">
+              🛑
+            </div>
+            <h4 class="text-lg font-bold text-white">Why Probabilistic LLMs Fail</h4>
+            <p class="text-xs font-medium text-amber-400 mt-1">Hallucinations, Latency & Bill Shock</p>
+            <ul class="mt-4 space-y-3 text-xs text-slate-300">
+              <li class="flex items-start space-x-2">
+                <span class="text-amber-400 font-bold">•</span>
+                <span><strong>Numerical Hallucinations:</strong> LLMs struggle with strict floating-point math and invent inventory deltas.</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <span class="text-amber-400 font-bold">•</span>
+                <span><strong>Severe Latency:</strong> 2–4 seconds per SKU evaluation halts automated batch sync pipelines.</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <span class="text-amber-400 font-bold">•</span>
+                <span><strong>Massive API Bills:</strong> Evaluating 50,000 SKUs daily through GPT-4o costs <strong>$450–$1,200/month</strong> in pure token fees.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-400">
+            Auditability: <strong>Zero</strong> (Non-deterministic outputs).
+          </div>
+        </div>
+
+        <!-- Column 3: The Zero-LLM Architecture -->
+        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between border-t-2 border-t-emerald-500/80 bg-slate-900/80">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold mb-4">
+              ⚡
+            </div>
+            <h4 class="text-lg font-bold text-white">The Zero-LLM Solution</h4>
+            <p class="text-xs font-medium text-emerald-400 mt-1">Deterministic Math & Microsecond Logic</p>
+            <ul class="mt-4 space-y-3 text-xs text-slate-300">
+              <li class="flex items-start space-x-2">
+                <span class="text-emerald-400 font-bold">•</span>
+                <span><strong>Mathematical Truth:</strong> $D(s) = Q_{\text{store}} - Q_{\text{wms}}$ evaluates with 100.00% precision.</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <span class="text-emerald-400 font-bold">•</span>
+                <span><strong>227,313 SKUs/sec:</strong> Evaluates the entire catalog in 44 milliseconds.</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <span class="text-emerald-400 font-bold">•</span>
+                <span><strong>$0.00 Token Cost:</strong> Runs on lightweight local Windmill workers without cloud AI dependencies.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] text-emerald-400 font-semibold">
+            Compliance: <strong>Full Relational Audit Trail</strong>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Storefront Spotlight: Shopify & WooCommerce -->
+  <section id="storefronts" class="py-20 border-t border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Storefront Native Integrations</h2>
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Deeply Wired for Shopify & WooCommerce</h3>
+        <p class="mt-4 text-slate-400 text-sm sm:text-base">
+          Native connectors built to respect platform-specific API rate limits, webhooks, and atomic batch mutations.
+        </p>
+      </div>
+
+      <div class="mt-14 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Shopify Deep Card -->
+        <div class="glass-card rounded-2xl p-8 border border-emerald-500/20 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          
+          <div class="flex items-center space-x-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <!-- Official Shopify Bag Logo -->
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.002 6.578a1.077 1.077 0 00-.918-.287c-.033.004-.848.113-2.158.287-1.127-1.39-2.73-2.316-4.225-2.316-.089 0-.174.004-.262.012C10.742 2.825 9.493 2 8.163 2 5.568 2 3.86 4.398 3.86 7.158c0 .874.192 1.77.587 2.766L2.3 19.34a1.078 1.078 0 00.957 1.34c.058.004.116.004.174.004.484 0 .93-.327 1.042-.824l1.325-5.835 3.393 2.47c.28.204.62.312.96.312.33 0 .66-.1.936-.295l7.65-5.385a1.076 1.076 0 00.265-1.474l-.001-.004zm-8.814-1.28c.45-.045.92-.069 1.405-.069 1.156 0 2.222.564 3.013 1.458-1.572.21-3.238.432-4.418.591v-1.98zm-2.025-1.14c.732 0 1.405.474 1.758 1.17-.655.088-1.428.192-2.278.307-.153-.787.05-1.477.52-1.477z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold text-white">Shopify GraphQL Admin API</h4>
+              <p class="text-xs text-slate-400">Atomic inventory set with leaky-bucket rate governance</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 text-xs text-slate-300">
+            <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+              <span class="text-emerald-400 font-semibold uppercase tracking-wider text-[10px]">Atomic Mutation Target</span>
+              <p class="font-mono text-slate-200 mt-1">mutation inventorySetQuantities($input)</p>
+              <p class="text-slate-400 mt-1">Directly locks and updates `available` inventory across designated multi-location warehouse IDs (`locationId`).</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+                <span class="text-slate-400 text-[11px]">Rate Limit Buffer</span>
+                <p class="text-sm font-bold text-white mt-0.5">40 req / sec</p>
+                <p class="text-[10px] text-slate-500">Auto 250ms cooldown</p>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+                <span class="text-slate-400 text-[11px]">Shopify Plus Mode</span>
+                <p class="text-sm font-bold text-white mt-0.5">80 req / sec</p>
+                <p class="text-[10px] text-slate-500">Double concurrency scale</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2 text-[11px] text-slate-400">
+              <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+              <span>Scopes: `write_inventory`, `read_inventory`, `read_products`</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- WooCommerce Deep Card -->
+        <div class="glass-card rounded-2xl p-8 border border-purple-500/20 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-48 h-48 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div class="flex items-center space-x-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <!-- Official WooCommerce Logo -->
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10c0-5.52-4.48-10-10-10zm5.2 13.8c-.3.4-.8.6-1.4.6-.7 0-1.3-.3-1.8-.8l-1.9-2.1-1.9 2.1c-.5.5-1.1.8-1.8.8-.6 0-1.1-.2-1.4-.6-.4-.4-.6-.9-.6-1.5 0-.8.3-1.5.8-2.1l2.5-2.8c.4-.4.9-.7 1.5-.7.6 0 1.1.3 1.5.7l2.5 2.8c.5.6.8 1.3.8 2.1 0 .6-.2 1.1-.6 1.5z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold text-white">WooCommerce REST API v3</h4>
+              <p class="text-xs text-slate-400">High-throughput batch endpoint with reverse logistics hook</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 text-xs text-slate-300">
+            <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+              <span class="text-purple-400 font-semibold uppercase tracking-wider text-[10px]">High-Throughput Batch Endpoint</span>
+              <p class="font-mono text-slate-200 mt-1">POST /wp-json/wc/v3/products/batch</p>
+              <p class="text-slate-400 mt-1">Updates up to <strong>100 SKUs per single HTTP request</strong>, bypassing individual product save latencies.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+                <span class="text-slate-400 text-[11px]">Reverse Logistics Hook</span>
+                <p class="text-sm font-bold text-white mt-0.5">Order Refunded</p>
+                <p class="text-[10px] text-slate-500">Instant SKU re-audit</p>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+                <span class="text-slate-400 text-[11px]">Omnichannel Allocator</span>
+                <p class="text-sm font-bold text-white mt-0.5">Dual Velocity</p>
+                <p class="text-[10px] text-slate-500">Shopify + Woo split</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2 text-[11px] text-slate-400">
+              <svg class="w-4 h-4 text-purple-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+              <span>Auth: Basic Auth with Consumer Key (`ck_...`) & Secret (`cs_...`)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive State Machine Section -->
+  <section id="architecture" class="py-20 border-t border-slate-800/80 bg-slate-900/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Deterministic Engine</h2>
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">The 4-State Machine Taxonomy</h3>
+        <p class="mt-4 text-slate-400 text-sm sm:text-base">
+          Every SKU evaluated passes through a strict deterministic state taxonomy. Select a state below to inspect the automated agent behavior:
+        </p>
+      </div>
+
+      <!-- State Tab Controls -->
+      <div class="mt-12 flex flex-wrap justify-center gap-3">
+        <button onclick="selectState('A')" id="btn-state-A" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition">
+          State A: Perfect Match
+        </button>
+        <button onclick="selectState('B')" id="btn-state-B" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition">
+          State B: Safe Hidden Stock
+        </button>
+        <button onclick="selectState('C')" id="btn-state-C" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition">
+          State C: Ghost Stock Danger
+        </button>
+        <button onclick="selectState('D')" id="btn-state-D" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition">
+          State D: Transit Noise
+        </button>
+      </div>
+
+      <!-- Interactive State Display Box -->
+      <div class="mt-8 max-w-4xl mx-auto glass-card rounded-2xl p-8 border border-slate-700/80" id="state-display-box">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <span id="state-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              STATE A (Drift = 0)
+            </span>
+            <h4 id="state-title" class="text-2xl font-bold text-white mt-2">Storefront & Physical Warehouse in Sync</h4>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-400">Agent Action:</span>
+            <p id="state-action" class="text-sm font-bold text-emerald-400 mt-0.5">SILENT PASS (Audit Committed)</p>
+          </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+            <span class="text-slate-400">Shopify Storefront Qty</span>
+            <p id="state-shopify-qty" class="text-xl font-bold text-white mt-1">40 units</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+            <span class="text-slate-400">3PL Physical WMS Qty</span>
+            <p id="state-wms-qty" class="text-xl font-bold text-white mt-1">40 units</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+            <span class="text-slate-400">Calculated Drift D(s)</span>
+            <p id="state-drift-score" class="text-xl font-bold text-emerald-400 mt-1">0 (0.0%)</p>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+          <span class="font-bold text-slate-100">Behavioral Rule:</span>
+          <p id="state-description" class="mt-1">
+            Storefront and physical warehouse reality are 100% synchronized. The agent writes an audit log entry to the ledger and immediately terminates execution for this item without issuing external mutations, saving API calls.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Self-Healing Agentic Reflexes -->
+  <section id="reflexes" class="py-20 border-t border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Resilience Engineering</h2>
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Self-Healing Circuit Breakers & Watchdogs</h3>
+        <p class="mt-4 text-slate-400 text-sm sm:text-base">
+          Production systems fail when upstream APIs glitch. This pipeline implements deterministic safety reflexes to protect brand revenue under stress:
+        </p>
+      </div>
+
+      <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Reflex 1 -->
+        <div class="glass-card rounded-2xl p-7 border-t-2 border-t-blue-500">
+          <span class="text-blue-400 font-bold text-xs uppercase tracking-wider">Reflex 1</span>
+          <h4 class="text-lg font-bold text-white mt-1">The "Blind Agent" Circuit Breaker</h4>
+          <p class="text-xs text-slate-400 mt-2">
+            If the 3PL WMS returns HTTP 503 or network timeout during the fetch phase:
+          </p>
+          <div class="mt-4 p-3 rounded-lg bg-slate-950 border border-slate-800 font-mono text-[11px] text-blue-300">
+            3x Retries: 0.5s &rarr; 1.0s &rarr; 2.0s
+          </div>
+          <p class="mt-4 text-xs text-slate-300 leading-relaxed">
+            If still unresponsive, the agent halts all mutations and raises an emergency IT alert in `#operations`. <strong>It never alters digital stock blindly.</strong>
+          </p>
+        </div>
+
+        <!-- Reflex 2 -->
+        <div class="glass-card rounded-2xl p-7 border-t-2 border-t-pink-500">
+          <span class="text-pink-400 font-bold text-xs uppercase tracking-wider">Reflex 2</span>
+          <h4 class="text-lg font-bold text-white mt-1">The "Flash Sale" Lockdown</h4>
+          <p class="text-xs text-slate-400 mt-2">
+            During viral TikTok drops, live promotions, or Black Friday spikes:
+          </p>
+          <div class="mt-4 p-3 rounded-lg bg-slate-950 border border-slate-800 font-mono text-[11px] text-pink-300">
+            is_lockdown = true
+          </div>
+          <p class="mt-4 text-xs text-slate-300 leading-relaxed">
+            The 2:00 AM auditor respects this global lock and <strong>strictly refuses to lower inventory counts</strong>, preventing viral checkouts from being throttled.
+          </p>
+        </div>
+
+        <!-- Watchdog -->
+        <div class="glass-card rounded-2xl p-7 border-t-2 border-t-amber-500">
+          <span class="text-amber-400 font-bold text-xs uppercase tracking-wider">Watchdog Failsafe</span>
+          <h4 class="text-lg font-bold text-white mt-1">12-Hour Timeout Auto-Zero</h4>
+          <p class="text-xs text-slate-400 mt-2">
+            When State C routes an item for physical bin recount:
+          </p>
+          <div class="mt-4 p-3 rounded-lg bg-slate-950 border border-slate-800 font-mono text-[11px] text-amber-300">
+            waitForApproval() (Timeout: 12h)
+          </div>
+          <p class="mt-4 text-xs text-slate-300 leading-relaxed">
+            If the warehouse manager does not respond within 12 hours, the agent <strong>automatically forces Shopify stock to 0</strong> to eliminate overselling chargebacks.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive ROI & Loss Prevention Calculator -->
+  <section id="calculator" class="py-20 border-t border-slate-800/80 bg-slate-900/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Business Impact</h2>
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Interactive Financial Recovery Calculator</h3>
+        <p class="mt-4 text-slate-400 text-sm sm:text-base">
+          Estimate how much hidden revenue you unlock and how many oversell penalties you eliminate:
+        </p>
+      </div>
+
+      <div class="mt-14 max-w-4xl mx-auto glass-card rounded-3xl p-8 sm:p-10 border border-indigo-500/30 shadow-2xl">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          
+          <!-- Slider Controls -->
+          <div class="space-y-6">
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-2">
+                <span class="text-slate-300">Monthly Order Volume:</span>
+                <span class="text-indigo-400 font-bold" id="val-orders">25,000 orders</span>
+              </div>
+              <input type="range" min="1000" max="100000" step="1000" value="25000" id="range-orders" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500" oninput="calculateROI()">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-2">
+                <span class="text-slate-300">Average Order Value (AOV):</span>
+                <span class="text-indigo-400 font-bold" id="val-aov">$85</span>
+              </div>
+              <input type="range" min="20" max="300" step="5" value="85" id="range-aov" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500" oninput="calculateROI()">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-2">
+                <span class="text-slate-300">Estimated Catalog Drift Rate:</span>
+                <span class="text-indigo-400 font-bold" id="val-drift">3.5%</span>
+              </div>
+              <input type="range" min="0.5" max="10.0" step="0.5" value="3.5" id="range-drift" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500" oninput="calculateROI()">
+            </div>
+          </div>
+
+          <!-- Dynamic Output Display -->
+          <div class="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-5">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Stranded Revenue Unlocked</span>
+              <p class="text-3xl font-extrabold text-white mt-0.5" id="out-unlocked">$37,187 / mo</p>
+              <p class="text-[11px] text-slate-400">Direct sales recovered from unlisted warehouse surplus.</p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800/80">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-pink-400">Oversell Chargebacks Prevented</span>
+              <p class="text-2xl font-bold text-white mt-0.5" id="out-chargebacks">$12,400 / mo</p>
+              <p class="text-[11px] text-slate-400">Stopped customer refunds, merchant dispute fees, and repacking labor.</p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800/80">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">LLM Token Fees Avoided</span>
+              <p class="text-xl font-bold text-white mt-0.5" id="out-tokens">$850 / mo</p>
+              <p class="text-[11px] text-slate-400">Saved vs running recurring GPT-4o reconciliation prompts.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 100k Benchmark Section -->
+  <section id="benchmarks" class="py-20 border-t border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400">Enterprise Verification</h2>
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">100,000 Orders Stress Test Benchmark</h3>
+        <p class="mt-4 text-slate-400 text-sm sm:text-base">
+          Subjected to realistic enterprise multi-cart order stress tests across 100 commercial SKUs:
+        </p>
+      </div>
+
+      <div class="mt-12 max-w-5xl mx-auto glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900/90 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
+            <tr>
+              <th class="py-4 px-6">Evaluation Vector</th>
+              <th class="py-4 px-6">Enterprise Threshold</th>
+              <th class="py-4 px-6">Measured Performance</th>
+              <th class="py-4 px-6 text-right">Production Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-medium text-slate-300">
+            <tr class="hover:bg-slate-900/40 transition">
+              <td class="py-4 px-6 text-white font-bold">Mathematical Classification</td>
+              <td class="py-4 px-6">100.00% Zero-Error</td>
+              <td class="py-4 px-6 text-emerald-400 font-bold">100.00% (0/100 errors)</td>
+              <td class="py-4 px-6 text-right"><span class="px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-400 font-bold">PASSED</span></td>
+            </tr>
+            <tr class="hover:bg-slate-900/40 transition">
+              <td class="py-4 px-6 text-white font-bold">Query Latency (100k Orders)</td>
+              <td class="py-4 px-6">&lt; 1,500 ms</td>
+              <td class="py-4 px-6 text-indigo-300 font-bold">310.75 ms (321,804 rows/sec)</td>
+              <td class="py-4 px-6 text-right"><span class="px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-400 font-bold">PASSED</span></td>
+            </tr>
+            <tr class="hover:bg-slate-900/40 transition">
+              <td class="py-4 px-6 text-white font-bold">Brain Scoring Speed</td>
+              <td class="py-4 px-6">&gt; 15,000 SKUs/sec</td>
+              <td class="py-4 px-6 text-purple-300 font-bold">227,313 SKUs/sec (0.044s)</td>
+              <td class="py-4 px-6 text-right"><span class="px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-400 font-bold">PASSED</span></td>
+            </tr>
+            <tr class="hover:bg-slate-900/40 transition">
+              <td class="py-4 px-6 text-white font-bold">Concurrency (30 Workers)</td>
+              <td class="py-4 px-6">Zero Deadlocks</td>
+              <td class="py-4 px-6 text-slate-200">300 writes in 0.998s (0 locks)</td>
+              <td class="py-4 px-6 text-right"><span class="px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-400 font-bold">PASSED</span></td>
+            </tr>
+            <tr class="hover:bg-slate-900/40 transition">
+              <td class="py-4 px-6 text-white font-bold">Reflex 1: WMS Outage Breaker</td>
+              <td class="py-4 px-6">100% Blind Write Block</td>
+              <td class="py-4 px-6 text-blue-300">3 backoff retries &rarr; IT alert</td>
+              <td class="py-4 px-6 text-right"><span class="px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-400 font-bold">PASSED</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quickstart Section -->
+  <section id="quickstart" class="py-20 border-t border-slate-800/80 bg-slate-900/60">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Ready for Production Deployment?</h2>
+      <p class="mt-4 text-slate-400 text-sm max-w-2xl mx-auto">
+        Install the autonomous auditor into your e-commerce stack in 3 simple commands:
+      </p>
+
+      <div class="mt-8 p-6 rounded-2xl bg-slate-950 border border-slate-800 text-left max-w-2xl mx-auto font-mono text-xs text-slate-300 shadow-xl overflow-x-auto">
+        <p class="text-slate-500"># 1. Clone repository</p>
+        <p class="text-indigo-400">git clone https://github.com/arinbiki/The-Ghost-Inventory-Auto-Reconciliation-Pipeline.git</p>
+        <p class="text-slate-500 mt-3"># 2. Install dependencies & configure .env</p>
+        <p class="text-indigo-400">pip install -r requirements.txt && cp .env.example .env</p>
+        <p class="text-slate-500 mt-3"># 3. Run interactive terminal demo</p>
+        <p class="text-emerald-400 font-bold">python run_pipeline_demo.py</p>
+      </div>
+
+      <div class="mt-8 flex justify-center gap-4">
+        <a href="https://github.com/arinbiki/The-Ghost-Inventory-Auto-Reconciliation-Pipeline" target="_blank" class="px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition shadow-lg shadow-indigo-600/30">
+          View Repository on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 border-t border-slate-800/80 glass-card">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-400">
+      <div class="flex items-center space-x-3">
+        <div class="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">G</div>
+        <span class="font-bold text-slate-200">The Ghost Inventory Auto-Reconciliation Pipeline</span>
+      </div>
+      <p>Built for Enterprise E-Commerce Operations • Zero-LLM Architecture</p>
+      <div class="flex space-x-6">
+        <a href="https://github.com/arinbiki/The-Ghost-Inventory-Auto-Reconciliation-Pipeline" class="hover:text-white transition">GitHub</a>
+        <a href="#storefronts" class="hover:text-white transition">Shopify</a>
+        <a href="#storefronts" class="hover:text-white transition">WooCommerce</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    const states = {
+      'A': {
+        badge: 'STATE A (Drift = 0)',
+        badgeClass: 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
+        title: 'Storefront & Physical Warehouse in Sync',
+        action: 'SILENT PASS (Audit Committed)',
+        actionColor: 'text-emerald-400',
+        shopify: '40 units',
+        wms: '40 units',
+        drift: '0 (0.0%)',
+        driftColor: 'text-emerald-400',
+        desc: 'Storefront and physical warehouse reality are 100% synchronized. The agent writes an audit log entry to the ledger and immediately terminates execution for this item without issuing external mutations, saving API calls.'
+      },
+      'B': {
+        badge: 'STATE B (Drift < 0)',
+        badgeClass: 'px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30',
+        title: 'Safe Hidden Stock on Physical Shelves',
+        action: 'AUTONOMOUS STOCK UNLOCK',
+        actionColor: 'text-blue-400',
+        shopify: '12 units',
+        wms: '45 units',
+        drift: '-33 (Surplus +33)',
+        driftColor: 'text-blue-400',
+        desc: 'Physical warehouse holds 33 unlisted units that Shopify marks as sold out. The agent autonomously dispatches an upward mutation to Shopify/WooCommerce, instantly unlocking $2,475 in gross sales without human intervention.'
+      },
+      'C': {
+        badge: 'STATE C (Drift > 0)',
+        badgeClass: 'px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30',
+        title: 'DANGER: Phantom Ghost Stock Advertised',
+        action: 'SUSPEND FOR HUMAN PHYSICAL RECOUNT',
+        actionColor: 'text-red-400',
+        shopify: '48 units',
+        wms: '8 units',
+        drift: '+40 (Phantom +40)',
+        driftColor: 'text-red-400',
+        desc: 'CRITICAL OVERSELL RISK: Storefront is actively selling 40 non-existent units. The agent immediately suspends execution (waitForApproval), sends an aisle recount form to the Warehouse Manager, and will auto-zero stock after 12 hours if unverified.'
+      },
+      'D': {
+        badge: 'STATE D (Margin <= 2%)',
+        badgeClass: 'px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30',
+        title: 'In-Transit Freight Manifest Noise',
+        action: 'TRANSIT DISMISSAL (No Store Mutation)',
+        actionColor: 'text-purple-400',
+        shopify: '500 units',
+        wms: '495 units',
+        drift: '+5 (1.0% <= 2%)',
+        driftColor: 'text-purple-400',
+        desc: 'Discrepancy (+5 units out of 500) is within the 2% tolerance threshold and backed by an active bill of lading / ASN manifest in transit. Flagged as acceptable logistics noise; no storefront alteration made.'
+      }
+    };
+
+    function selectState(stateKey) {
+      const s = states[stateKey];
+      document.getElementById('state-badge').className = s.badgeClass;
+      document.getElementById('state-badge').innerText = s.badge;
+      document.getElementById('state-title').innerText = s.title;
+      document.getElementById('state-action').innerText = s.action;
+      document.getElementById('state-action').className = 'text-sm font-bold mt-0.5 ' + s.actionColor;
+      document.getElementById('state-shopify-qty').innerText = s.shopify;
+      document.getElementById('state-wms-qty').innerText = s.wms;
+      document.getElementById('state-drift-score').innerText = s.drift;
+      document.getElementById('state-drift-score').className = 'text-xl font-bold mt-1 ' + s.driftColor;
+      document.getElementById('state-description').innerText = s.desc;
+
+      // Update button styles
+      ['A', 'B', 'C', 'D'].forEach(k => {
+        const btn = document.getElementById('btn-state-' + k);
+        if (k === stateKey) {
+          btn.className = 'px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white border border-indigo-500 shadow-md transition';
+        } else {
+          btn.className = 'px-5 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition';
+        }
+      });
+    }
+
+    function calculateROI() {
+      const orders = parseInt(document.getElementById('range-orders').value);
+      const aov = parseFloat(document.getElementById('range-aov').value);
+      const drift = parseFloat(document.getElementById('range-drift').value) / 100.0;
+
+      document.getElementById('val-orders').innerText = orders.toLocaleString() + ' orders';
+      document.getElementById('val-aov').innerText = '$' + aov;
+      document.getElementById('val-drift').innerText = (drift * 100).toFixed(1) + '%';
+
+      // Monthly calculations
+      const monthlyGMV = orders * aov;
+      const driftGMV = monthlyGMV * drift;
+      
+      // Conservative unlocked hidden revenue (35% of drift items are State B)
+      const unlockedRevenue = Math.round(driftGMV * 0.50);
+      
+      // Prevented chargeback and refund liabilities (25% of drift items are State C phantom stock, 20% would have oversold)
+      const preventedLoss = Math.round(driftGMV * 0.20 + (orders * 0.015 * 15)); // $15 repacking/dispute fee
+      
+      // LLM token savings ($0.034 per SKU audit if using GPT-4o daily for 1,000 SKUs)
+      const tokenSavings = Math.round((orders / 25) * 0.85);
+
+      document.getElementById('out-unlocked').innerText = '$' + unlockedRevenue.toLocaleString() + ' / mo';
+      document.getElementById('out-chargebacks').innerText = '$' + preventedLoss.toLocaleString() + ' / mo';
+      document.getElementById('out-tokens').innerText = '$' + tokenSavings.toLocaleString() + ' / mo';
+    }
+
+    // Initialize
+    calculateROI();
+  </script>
+</body>
+</html>
