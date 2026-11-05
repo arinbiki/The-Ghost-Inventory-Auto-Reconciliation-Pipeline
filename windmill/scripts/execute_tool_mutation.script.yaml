@@ -1,0 +1,22 @@
+summary: ''
+description: ''
+lock: '!inline f/ecom_inventory_recon/execute_tool_mutation.script.lock'
+kind: script
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    call_n8n_remote:
+      type: boolean
+      description: ''
+      default: false
+    mutations:
+      type: ''
+      description: ''
+      default: null
+    run_id:
+      type: string
+      description: ''
+      default: null
+      originalType: string
+  required: []

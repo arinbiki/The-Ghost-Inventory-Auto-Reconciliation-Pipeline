@@ -1,0 +1,28 @@
+summary: ''
+description: ''
+lock: '!inline f/ecom_inventory_recon/fetch_parallel_stock.script.lock'
+kind: script
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    batch_size:
+      type: integer
+      description: ''
+      default: 50
+    max_retries:
+      type: integer
+      description: ''
+      default: 3
+    simulate_wms_outage:
+      type: boolean
+      description: ''
+      default: false
+    target_skus:
+      type: array
+      description: ''
+      default: null
+      items:
+        type: string
+      originalType: string[]
+  required: []

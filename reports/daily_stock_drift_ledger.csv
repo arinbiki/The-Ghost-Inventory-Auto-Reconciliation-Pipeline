@@ -1,0 +1,101 @@
+sku,title,category,unit_price,cost_price,shopify_qty,wms_qty,drift_score,state,bin_location
+ACC-BACK-30L-02,Urban Commuter Waterproof Backpack 30L,Accessories,110,39,27,7,20,STATE_C_GHOST_DANGER,AISLE-C-B08
+ACC-CAP-WOOL-03,Merino Wool Thermal Beanie - Charcoal,Accessories,32,9.5,42,70,-28,STATE_B_SAFE_HIDDEN,AISLE-B-B08
+ACC-CAP-WOOL-04,Merino Wool Thermal Beanie - Olive,Accessories,32,9.5,42,79,-37,STATE_B_SAFE_HIDDEN,AISLE-B-B07
+ACC-CARD-HOLD-02,Slim Titanium Cardholder Money Clip,Accessories,38,12,173,173,0,STATE_A_PERFECT_MATCH,AISLE-A-B14
+ACC-DOPP-KIT-01,Waterproof Ballistic Nylon Toiletry Kit,Accessories,39,12.5,13,58,-45,STATE_B_SAFE_HIDDEN,AISLE-B-B18
+ACC-DUFF-45L-03,Weekend Travel Duffle Bag Water-Resistant,Accessories,135,48,29,74,-45,STATE_B_SAFE_HIDDEN,AISLE-B-B17
+ACC-KEY-ORG-01,Silent Magnetic Key Organizer Keychain,Accessories,28,8.5,197,197,0,STATE_A_PERFECT_MATCH,AISLE-A-B05
+ACC-LEATH-BELT,Hand-Stitched Italian Bridle Leather Belt,Accessories,55,18,10,58,-48,STATE_B_SAFE_HIDDEN,AISLE-B-B06
+ACC-LEATH-WLT-01,RFID Blocking Bi-fold Leather Wallet,Accessories,45,15,93,93,0,STATE_A_PERFECT_MATCH,AISLE-A-B13
+ACC-PASSP-CASE,Full Grain Leather Passport Travel Wallet,Accessories,48,16,66,15,51,STATE_C_GHOST_DANGER,AISLE-C-B16
+ACC-SLING-8L-04,Crossbody Everyday Tech Sling Bag 8L,Accessories,65,22,182,182,0,STATE_A_PERFECT_MATCH,AISLE-A-B03
+ACC-SUN-POL-04,Polarized Titanium Sunglasses - Matte Black,Accessories,95,30,15,92,-77,STATE_B_SAFE_HIDDEN,AISLE-B-B20
+ACC-SUN-POL-05,Polarized Aviator Sunglasses - Gold Frame,Accessories,105,33,46,46,0,STATE_A_PERFECT_MATCH,AISLE-A-B04
+ACC-TECH-POUCH,Cable & Tech Accessory Organizer Pouch,Accessories,34,10,51,7,44,STATE_C_GHOST_DANGER,AISLE-C-B25
+ACC-WATCH-ROLL,Triple Watch Storage Travel Case Suede,Accessories,75,24,26,95,-69,STATE_B_SAFE_HIDDEN,AISLE-B-B24
+APP-ACTIVE-SHRT,Moisture-Wicking Athletic Shorts - M,Apparel,42,13,190,190,0,STATE_A_PERFECT_MATCH,AISLE-A-B30
+APP-CHINO-KHK,Performance Stretch Chino Pant - 32x32,Apparel,92,32,963,957,6,STATE_D_TRANSIT_NOISE,AISLE-D-B05
+APP-HOOD-BLK-L,Heavyweight Organic Hoodie - Black L,Apparel,78,26,41,58,-17,STATE_B_SAFE_HIDDEN,AISLE-B-B15
+APP-HOOD-BLK-M,Heavyweight Organic Hoodie - Black M,Apparel,78,26,147,147,0,STATE_A_PERFECT_MATCH,AISLE-A-B09
+APP-HOOD-BLK-XL,Heavyweight Organic Hoodie - Black XL,Apparel,78,26,685,678,7,STATE_D_TRANSIT_NOISE,AISLE-D-B03
+APP-HOOD-GRY-L,Heavyweight Organic Hoodie - Heather Grey L,Apparel,78,26,80,9,71,STATE_C_GHOST_DANGER,AISLE-C-B01
+APP-HOOD-GRY-M,Heavyweight Organic Hoodie - Heather Grey M,Apparel,78,26,20,93,-73,STATE_B_SAFE_HIDDEN,AISLE-B-B05
+APP-JOG-BLK-L,Technical French Terry Joggers - Black L,Apparel,88,30,477,472,5,STATE_D_TRANSIT_NOISE,AISLE-D-B04
+APP-JOG-BLK-M,Technical French Terry Joggers - Black M,Apparel,88,30,38,6,32,STATE_C_GHOST_DANGER,AISLE-C-B18
+APP-JOG-NVY-L,Technical French Terry Joggers - Navy L,Apparel,88,30,58,58,0,STATE_A_PERFECT_MATCH,AISLE-A-B28
+APP-JOG-NVY-M,Technical French Terry Joggers - Navy M,Apparel,88,30,87,2,85,STATE_C_GHOST_DANGER,AISLE-C-B12
+APP-PARKA-COAT,All-Weather Technical Storm Parka - L,Apparel,295,110,87,15,72,STATE_C_GHOST_DANGER,AISLE-C-B17
+APP-SHIRT-OXF,Tailored Oxford Button-Down - White M,Apparel,72,24,65,65,0,STATE_A_PERFECT_MATCH,AISLE-A-B23
+APP-TEE-BLK-L,Essential Supima Cotton T-Shirt - Black L,Apparel,34,10.5,14,45,-31,STATE_B_SAFE_HIDDEN,AISLE-B-B21
+APP-TEE-BLK-M,Essential Supima Cotton T-Shirt - Black M,Apparel,34,10.5,17,66,-49,STATE_B_SAFE_HIDDEN,AISLE-B-B02
+APP-TEE-WHT-L,Essential Supima Cotton T-Shirt - White L,Apparel,34,10.5,46,71,-25,STATE_B_SAFE_HIDDEN,AISLE-B-B19
+APP-TEE-WHT-M,Essential Supima Cotton T-Shirt - White M,Apparel,34,10.5,86,86,0,STATE_A_PERFECT_MATCH,AISLE-A-B22
+APP-TEE-WHT-S,Essential Supima Cotton T-Shirt - White S,Apparel,34,10.5,65,2,63,STATE_C_GHOST_DANGER,AISLE-C-B05
+APP-THERM-BASE,Base Layer Thermal Compression Top - L,Apparel,52,17,50,129,-79,STATE_B_SAFE_HIDDEN,AISLE-B-B10
+APP-WOOL-SWTR,Seamless Merino Crewneck Sweater - M,Apparel,125,44,122,122,0,STATE_A_PERFECT_MATCH,AISLE-A-B21
+BEAUT-BODY-WASH,Eucalyptus & Cedarwood Aromatherapy Wash,Beauty & Wellness,24,5.5,156,156,0,STATE_A_PERFECT_MATCH,AISLE-A-B25
+BEAUT-CLAY-MASK,Purifying French Green Clay Detox Mask,Beauty & Wellness,29,7,97,4,93,STATE_C_GHOST_DANGER,AISLE-C-B15
+BEAUT-CLEAN-OIL,Gentle Botanical Cleansing Oil 150ml,Beauty & Wellness,28,7,128,128,0,STATE_A_PERFECT_MATCH,AISLE-A-B05
+BEAUT-EXFOL-AHA,AHA/BHA Chemical Exfoliating Toner 100ml,Beauty & Wellness,26,6,179,179,0,STATE_A_PERFECT_MATCH,AISLE-A-B19
+BEAUT-EYE-PEPT,Caffeine & Matrixyl Peptide Eye Gel,Beauty & Wellness,38,9,66,66,0,STATE_A_PERFECT_MATCH,AISLE-A-B10
+BEAUT-FACIAL-OIL,Pure Cold-Pressed Squalane Balancing Oil,Beauty & Wellness,34,8,87,11,76,STATE_C_GHOST_DANGER,AISLE-C-B02
+BEAUT-HA-HYDRA-02,Multi-Molecular Hyaluronic Acid Essence,Beauty & Wellness,36,8.5,167,167,0,STATE_A_PERFECT_MATCH,AISLE-A-B15
+BEAUT-HAIR-MASK,Argan & Keratin Deep Conditioning Hair Mask,Beauty & Wellness,35,8.5,810,797,13,STATE_D_TRANSIT_NOISE,AISLE-D-B10
+BEAUT-HAND-CR-01,Shea & Cocoa Butter Intensive Hand Salve,Beauty & Wellness,16,3.8,62,15,47,STATE_C_GHOST_DANGER,AISLE-C-B14
+BEAUT-LIP-TREAT,Overnight Peptide Nourishing Lip Butter,Beauty & Wellness,19,4.5,72,1,71,STATE_C_GHOST_DANGER,AISLE-C-B23
+BEAUT-MIST-ROSE,Organic Damascus Rosewater Hydrating Mist,Beauty & Wellness,22,5,42,42,0,STATE_A_PERFECT_MATCH,AISLE-A-B27
+BEAUT-RETINOL-01,Encapsulated Retinol Night Repair Cream 50ml,Beauty & Wellness,58,15,62,7,55,STATE_C_GHOST_DANGER,AISLE-C-B13
+BEAUT-SCALP-SER,Rosemary & Biotin Density Scalp Treatment,Beauty & Wellness,42,10.5,23,63,-40,STATE_B_SAFE_HIDDEN,AISLE-B-B25
+BEAUT-SERUM-VITC,Triple Active Vitamin C Brightening Serum 30ml,Beauty & Wellness,48,12,194,194,0,STATE_A_PERFECT_MATCH,AISLE-A-B08
+BEAUT-SUN-SPF50,Mineral Invisible Shield Sunscreen SPF 50+,Beauty & Wellness,32,7.5,97,97,0,STATE_A_PERFECT_MATCH,AISLE-A-B11
+ELEC-ANC-HEAD-01,Studio Wireless ANC Headphones,Electronics,249.99,92,953,938,15,STATE_D_TRANSIT_NOISE,AISLE-D-B06
+ELEC-ANC-HEAD-02,Studio Pro ANC Headphones Silver,Electronics,279.99,105,45,61,-16,STATE_B_SAFE_HIDDEN,AISLE-B-B01
+ELEC-CAM-4K-04,Ultra-HD Streaming Webcam 4K 60FPS,Electronics,119,41,175,175,0,STATE_A_PERFECT_MATCH,AISLE-A-B02
+ELEC-CBL-THUN-01,Braided Thunderbolt 4 Cable 2M (40Gbps),Electronics,35,9.5,53,53,0,STATE_A_PERFECT_MATCH,AISLE-A-B26
+ELEC-DESK-PAD-XL,Micro-Weave Hydrophobic Desk Mat XXL,Electronics,32,9,33,1,32,STATE_C_GHOST_DANGER,AISLE-C-B22
+ELEC-EAR-BUD-01,True Wireless Noise-Cancelling Earbuds,Electronics,149.99,52,132,132,0,STATE_A_PERFECT_MATCH,AISLE-A-B20
+ELEC-EAR-BUD-02,Sport Fit Waterproof Wireless Earbuds,Electronics,99.95,33,17,78,-61,STATE_B_SAFE_HIDDEN,AISLE-B-B16
+ELEC-ERG-MOUSE,Precision Ergonomic Bluetooth Mouse,Electronics,79,26,49,14,35,STATE_C_GHOST_DANGER,AISLE-C-B03
+ELEC-LAP-STND-01,Foldable Anodized Aluminum Laptop Riser,Electronics,48,15,35,7,28,STATE_C_GHOST_DANGER,AISLE-C-B10
+ELEC-LED-BAR-01,ScreenBar Smart Monitor Light Lamp,Electronics,59,19,179,179,0,STATE_A_PERFECT_MATCH,AISLE-A-B17
+ELEC-MAG-CHRG-02,3-in-1 MagSafe Fast Charging Dock,Electronics,89.95,31,31,60,-29,STATE_B_SAFE_HIDDEN,AISLE-B-B03
+ELEC-MECH-KEY-01,Wireless Low-Profile Mechanical Keyboard,Electronics,139,48,84,84,0,STATE_A_PERFECT_MATCH,AISLE-A-B01
+ELEC-MIC-POD-01,Broadcast Dynamic USB/XLR Microphone,Electronics,159,56,97,97,0,STATE_A_PERFECT_MATCH,AISLE-A-B16
+ELEC-MON-ARM-01,Heavy-Duty Dual Monitor Desk Mount Arm,Electronics,110,38,138,138,0,STATE_A_PERFECT_MATCH,AISLE-A-B02
+ELEC-PWR-BNK-20K,20 000mAh 65W PD Laptop Power Bank,Electronics,69.95,23,127,127,0,STATE_A_PERFECT_MATCH,AISLE-A-B06
+ELEC-SMART-PLUG,Energy Monitoring WiFi Smart Plug 4-Pack,Electronics,42,13,48,104,-56,STATE_B_SAFE_HIDDEN,AISLE-B-B14
+ELEC-SPK-BLU-01,Rugged IP67 Waterproof Bluetooth Speaker,Electronics,89,29,19,81,-62,STATE_B_SAFE_HIDDEN,AISLE-B-B12
+ELEC-USB-HUB-03,10-in-1 USB-C Hub Thunderbolt 4,Electronics,79.99,27,28,98,-70,STATE_B_SAFE_HIDDEN,AISLE-B-B04
+ELEC-VR-PAD-01,Anti-Fatigue Standing Desk Active Mat,Electronics,65,21,149,149,0,STATE_A_PERFECT_MATCH,AISLE-A-B08
+ELEC-WALL-GAN-65,65W Dual Port GaN Nano Wall Charger,Electronics,39.99,11,157,157,0,STATE_A_PERFECT_MATCH,AISLE-A-B06
+HOME-AIR-PUR-01,True HEPA Silent Room Air Purifier 250sqft,Home & Kitchen,139,46,85,11,74,STATE_C_GHOST_DANGER,AISLE-C-B20
+HOME-CANDLE-SOY-03,Hand-Poured Amber & Sandalwood Soy Candle,Home & Kitchen,28,7.5,63,1,62,STATE_C_GHOST_DANGER,AISLE-C-B11
+HOME-CANDLE-SOY-04,Hand-Poured Smoked Fig & Bergamot Candle,Home & Kitchen,28,7.5,55,7,48,STATE_C_GHOST_DANGER,AISLE-C-B04
+HOME-CAST-IRON,Pre-Seasoned Enamelled Dutch Oven 5.5 Qt,Home & Kitchen,120,41,29,2,27,STATE_C_GHOST_DANGER,AISLE-C-B09
+HOME-CERAM-MUG,Handmade Stoneware Coffee Mug Set of 2,Home & Kitchen,34,9,102,7,95,STATE_C_GHOST_DANGER,AISLE-C-B07
+HOME-CHOP-BRD-01,End-Grain Walnut Hardwood Cutting Board,Home & Kitchen,85,28,110,110,0,STATE_A_PERFECT_MATCH,AISLE-A-B03
+HOME-DIFF-CER-02,Ultrasonic Ceramic Aroma Diffuser 300ml,Home & Kitchen,55,17.5,78,3,75,STATE_C_GHOST_DANGER,AISLE-C-B19
+HOME-GLASS-STRW,Borosilicate Drinking Glasses 16oz Set of 4,Home & Kitchen,36,10,160,160,0,STATE_A_PERFECT_MATCH,AISLE-A-B24
+HOME-KNIFE-CHEF,Japanese VG-10 Damascus Steel Chef Knife 8in,Home & Kitchen,145,49,139,139,0,STATE_A_PERFECT_MATCH,AISLE-A-B18
+HOME-LINEN-QUILT-01,Washed French Linen Duvet - Queen Slate,Home & Kitchen,195,68,165,165,0,STATE_A_PERFECT_MATCH,AISLE-A-B09
+HOME-LINEN-QUILT-02,Washed French Linen Duvet - King Natural,Home & Kitchen,215,75,594,587,7,STATE_D_TRANSIT_NOISE,AISLE-D-B01
+HOME-POUR-KETTLE,Precision Gooseneck Electric Kettle Matte,Home & Kitchen,89,29,495,487,8,STATE_D_TRANSIT_NOISE,AISLE-D-B07
+HOME-SHEET-SET,Percale Organic Cotton Sheet Set - Queen,Home & Kitchen,130,44,69,69,0,STATE_A_PERFECT_MATCH,AISLE-A-B29
+HOME-THRW-BLNK,Chunky Hand-Knit Weighted Throw Blanket,Home & Kitchen,125,42,48,88,-40,STATE_B_SAFE_HIDDEN,AISLE-B-B11
+HOME-TOWEL-SET,Turkish Zero-Twist Plush Bath Towel Set 4pc,Home & Kitchen,68,21,182,182,0,STATE_A_PERFECT_MATCH,AISLE-A-B07
+SHOE-AIR-001,Air Trail Running Sneaker - Men US 10,Footwear,129.99,48,95,0,95,STATE_C_GHOST_DANGER,AISLE-C-B06
+SHOE-AIR-002,Air Trail Running Sneaker - Men US 11,Footwear,129.99,48,131,131,0,STATE_A_PERFECT_MATCH,AISLE-A-B07
+SHOE-AIR-003,Air Trail Running Sneaker - Women US 7,Footwear,124.99,46,20,35,-15,STATE_B_SAFE_HIDDEN,AISLE-B-B13
+SHOE-AIR-004,Air Trail Running Sneaker - Women US 8,Footwear,124.99,46,642,638,4,STATE_D_TRANSIT_NOISE,AISLE-D-B08
+SHOE-BOOT-101,Weatherproof Hiking Boot - Unisex 9,Footwear,189.5,72,92,13,79,STATE_C_GHOST_DANGER,AISLE-C-B21
+SHOE-BOOT-102,Weatherproof Hiking Boot - Unisex 10,Footwear,189.5,72,18,93,-75,STATE_B_SAFE_HIDDEN,AISLE-B-B22
+SHOE-BOOT-103,Weatherproof Hiking Boot - Unisex 11,Footwear,189.5,72,45,81,-36,STATE_B_SAFE_HIDDEN,AISLE-B-B23
+SHOE-COURT-501,Pro Low-Top Court Tennis Shoe - 9.5,Footwear,115,42,897,887,10,STATE_D_TRANSIT_NOISE,AISLE-D-B09
+SHOE-DERB-301,Handcrafted Leather Derby - Black 9,Footwear,220,85,65,65,0,STATE_A_PERFECT_MATCH,AISLE-A-B12
+SHOE-DERB-302,Handcrafted Leather Derby - Brown 10,Footwear,220,85,43,10,33,STATE_C_GHOST_DANGER,AISLE-C-B24
+SHOE-SAND-401,Ergonomic Recovery Slide Sandal - 8,Footwear,45,14,94,94,0,STATE_A_PERFECT_MATCH,AISLE-A-B10
+SHOE-SAND-402,Ergonomic Recovery Slide Sandal - 10,Footwear,45,14,543,538,5,STATE_D_TRANSIT_NOISE,AISLE-D-B02
+SHOE-SLIP-201,Cloudfoam Minimalist Slip-On - 8,Footwear,65,22,50,103,-53,STATE_B_SAFE_HIDDEN,AISLE-B-B09
+SHOE-SLIP-202,Cloudfoam Minimalist Slip-On - 9,Footwear,65,22,70,70,0,STATE_A_PERFECT_MATCH,AISLE-A-B01
+SHOE-SLIP-203,Cloudfoam Minimalist Slip-On - 10,Footwear,65,22,84,84,0,STATE_A_PERFECT_MATCH,AISLE-A-B04

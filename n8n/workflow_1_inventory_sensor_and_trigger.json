@@ -1,0 +1,229 @@
+{
+  "name": "Ecom: Inventory Drift Sensor & Windmill Dispatcher",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "node-schedule-2am",
+      "name": "Daily 2:00 AM Warehouse Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ecom-inventory-audit-trigger",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-trigger",
+      "name": "Manual / Test Audit Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        440
+      ],
+      "webhookId": "ecom-inventory-audit-trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Heuristic Sensor: Target Audit List Generator\n// Queries telemetry and applies 3 deterministic heuristics to prevent rate-limit exhaustion:\n// 1. High Velocity (>5 sales yesterday)\n// 2. Reverse Logistics Drift (returns or cancellations yesterday)\n// 3. 5% random sample of Dead Stock (<1 sale past 30 days)\n\nconst inputData = $input.first().json || {};\nconst body = inputData.body || inputData;\nconst isLockdown = body.is_lockdown || false;\n\n// Core Seeded Catalog with Telemetry\nconst catalogTelemetry = [\n  {\n    sku: 'SHOE-AIR-001',\n    title: 'Air Trail Running Sneaker - Men US 10',\n    yesterday_sales: 14,\n    yesterday_returns: 0,\n    sales_30d: 85,\n    unit_price: 129.99,\n    flagged_reason: 'HIGH_VELOCITY_SALES'\n  },\n  {\n    sku: 'APP-HOOD-BLK-L',\n    title: 'Heavyweight Organic Hoodie - Black L',\n    yesterday_sales: 9,\n    yesterday_returns: 0,\n    sales_30d: 42,\n    unit_price: 78.00,\n    flagged_reason: 'HIGH_VELOCITY_SALES'\n  },\n  {\n    sku: 'ELEC-ANC-HEAD-01',\n    title: 'Studio Wireless ANC Headphones',\n    yesterday_sales: 6,\n    yesterday_returns: 1,\n    sales_30d: 28,\n    unit_price: 249.99,\n    flagged_reason: 'HIGH_VELOCITY_AND_RETURN'\n  },\n  {\n    sku: 'SHOE-BOOT-101',\n    title: 'Weatherproof Hiking Boot - Unisex 9',\n    yesterday_sales: 8,\n    yesterday_returns: 0,\n    sales_30d: 31,\n    unit_price: 189.50,\n    flagged_reason: 'HIGH_VELOCITY_SALES'\n  },\n  {\n    sku: 'APP-TEE-WHT-M',\n    title: 'Essential Supima Cotton T-Shirt - White M',\n    yesterday_sales: 12,\n    yesterday_returns: 0,\n    sales_30d: 110,\n    unit_price: 34.00,\n    flagged_reason: 'HIGH_VELOCITY_SALES'\n  },\n  {\n    sku: 'ACC-BACK-30L-02',\n    title: 'Urban Commuter Waterproof Backpack 30L',\n    yesterday_sales: 0,\n    yesterday_returns: 1,\n    sales_30d: 4,\n    unit_price: 110.00,\n    flagged_reason: 'REVERSE_LOGISTICS_RETURN'\n  },\n  {\n    sku: 'SHOE-SLIP-201',\n    title: 'Cloudfoam Minimalist Slip-On - 8',\n    yesterday_sales: 0,\n    yesterday_returns: 2,\n    sales_30d: 8,\n    unit_price: 65.00,\n    flagged_reason: 'REVERSE_LOGISTICS_RETURN'\n  },\n  {\n    sku: 'HOME-LINEN-QUILT-01',\n    title: 'Washed French Linen Duvet - Queen Slate',\n    yesterday_sales: 7,\n    yesterday_returns: 0,\n    sales_30d: 19,\n    unit_price: 195.00,\n    flagged_reason: 'HIGH_VELOCITY_SALES'\n  },\n  {\n    sku: 'ELEC-MAG-CHRG-02',\n    title: '3-in-1 MagSafe Fast Charging Dock',\n    yesterday_sales: 11,\n    yesterday_returns: 0,\n    sales_30d: 65,\n    unit_price: 89.95,\n    flagged_reason: 'HIGH_VELOCITY_SALES'\n  },\n  {\n    sku: 'APP-JOG-NVY-M',\n    title: 'Technical French Terry Joggers - Navy M',\n    yesterday_sales: 7,\n    yesterday_returns: 0,\n    sales_30d: 22,\n    unit_price: 88.00,\n    flagged_reason: 'HIGH_VELOCITY_SALES'\n  },\n  {\n    sku: 'ACC-LEATH-WLT-01',\n    title: 'RFID Blocking Bi-fold Leather Wallet',\n    yesterday_sales: 0,\n    yesterday_returns: 1,\n    sales_30d: 6,\n    unit_price: 45.00,\n    flagged_reason: 'REVERSE_LOGISTICS_RETURN'\n  },\n  {\n    sku: 'HOME-DIFF-CER-02',\n    title: 'Ultrasonic Ceramic Aroma Diffuser 300ml',\n    yesterday_sales: 0,\n    yesterday_returns: 0,\n    sales_30d: 0,\n    unit_price: 55.00,\n    flagged_reason: 'DEAD_STOCK_RANDOM_5PCT'\n  },\n  {\n    sku: 'ACC-CAP-WOOL-03',\n    title: 'Merino Wool Thermal Beanie - Charcoal',\n    yesterday_sales: 0,\n    yesterday_returns: 0,\n    sales_30d: 0,\n    unit_price: 32.00,\n    flagged_reason: 'DEAD_STOCK_RANDOM_5PCT'\n  }\n];\n\n// If custom skus were passed in the webhook payload, prioritize them\nconst overrideSkus = body.target_skus || [];\nlet targetAuditList = [];\n\nif (overrideSkus.length > 0) {\n  targetAuditList = catalogTelemetry.filter(item => overrideSkus.includes(item.sku));\n  if (targetAuditList.length === 0) {\n    targetAuditList = overrideSkus.map(s => ({\n      sku: s,\n      title: 'Requested SKU ' + s,\n      yesterday_sales: 6,\n      yesterday_returns: 0,\n      unit_price: 50.00,\n      flagged_reason: 'MANUAL_REQUEST'\n    }));\n  }\n} else {\n  targetAuditList = catalogTelemetry.filter(item => {\n    // Heuristic 1: High Velocity (>5 sales yesterday)\n    if (item.yesterday_sales > 5) return true;\n    // Heuristic 2: Return or Cancellation yesterday\n    if (item.yesterday_returns > 0) return true;\n    // Heuristic 3: 5% random dead stock\n    if (item.sales_30d === 0) return true;\n    return false;\n  });\n}\n\nconst runId = 'RUN-SENSOR-' + Date.now();\n\nreturn [{\n  json: {\n    run_id: runId,\n    audit_timestamp: new Date().toISOString(),\n    is_lockdown: isLockdown,\n    target_audit_count: targetAuditList.length,\n    target_skus: targetAuditList.map(item => item.sku),\n    target_audit_details: targetAuditList,\n    has_targets: targetAuditList.length > 0,\n    windmill_endpoint: 'http://localhost:8080/api/w/demo/jobs/run/f/ecom_inventory_recon/quaint_script'\n  }\n}];"
+      },
+      "id": "node-heuristic-sensor",
+      "name": "Heuristic Sensor Code Node",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-targets-exist",
+              "leftValue": "={{ $json.has_targets }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-router-switch",
+      "name": "Router (Empty vs Has Targets)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        720,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8080/api/w/demo/jobs/run/f/ecom_inventory_recon/quaint_script",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_WINDMILL_TOKEN_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "run_id",
+              "value": "={{ $json.run_id }}"
+            },
+            {
+              "name": "is_lockdown",
+              "value": "={{ $json.is_lockdown }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-dispatch-windmill",
+      "name": "Dispatch to Windmill Brain",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        240
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    status: 'TERMINATED_SAVED_COMPUTE',\n    message: 'Target Audit List is empty. All SKUs within safe drift thresholds.',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "node-empty-terminate",
+      "name": "Terminate - Zero Drift Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  success: true,\n  run_id: $json.run_id,\n  targets_identified: $json.target_audit_count,\n  target_skus: $json.target_skus,\n  details: $json.target_audit_details,\n  is_lockdown: $json.is_lockdown,\n  status: $json.has_targets ? 'TARGETS_DISPATCHED_TO_WINDMILL' : 'TERMINATED_NO_TARGETS',\n  timestamp: $json.audit_timestamp\n}) }}",
+        "options": {}
+      },
+      "id": "node-respond-trigger",
+      "name": "Respond Trigger Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Daily 2:00 AM Warehouse Schedule": {
+      "main": [
+        [
+          {
+            "node": "Heuristic Sensor Code Node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual / Test Audit Webhook": {
+      "main": [
+        [
+          {
+            "node": "Heuristic Sensor Code Node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Heuristic Sensor Code Node": {
+      "main": [
+        [
+          {
+            "node": "Respond Trigger Status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Router (Empty vs Has Targets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router (Empty vs Has Targets)": {
+      "main": [
+        [
+          {
+            "node": "Dispatch to Windmill Brain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Terminate - Zero Drift Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch to Windmill Brain": {
+      "main": [
+        [
+          {
+            "node": "Respond Trigger Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

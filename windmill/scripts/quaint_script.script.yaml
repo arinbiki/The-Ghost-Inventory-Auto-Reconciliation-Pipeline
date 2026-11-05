@@ -1,0 +1,26 @@
+summary: ''
+description: ''
+lock: '!inline f/ecom_inventory_recon/quaint_script.script.lock'
+kind: script
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    audit_items:
+      type: ''
+      description: ''
+      default: null
+    is_lockdown:
+      type: boolean
+      description: ''
+      default: false
+    run_id:
+      type: string
+      description: ''
+      default: null
+      originalType: string
+    transit_margin_pct:
+      type: number
+      description: ''
+      default: 0.02
+  required: []

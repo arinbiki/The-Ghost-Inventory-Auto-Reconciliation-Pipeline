@@ -1,0 +1,40 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Databases and WAL journal files
+database/*.db
+database/*.db-wal
+database/*.db-shm
+*.db
+*.db-wal
+*.db-shm
+flow_input.json
+
+# Scratch and temporary testing artifacts
+scratch/
+temp/
+tmp/
+*.log
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+

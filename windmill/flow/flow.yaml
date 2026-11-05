@@ -1,0 +1,130 @@
+summary: The Ghost Inventory Auto-Reconciliation Pipeline
+description: Zero-LLM deterministic inventory auditor agent. Evaluates
+  storefront (Shopify) vs 3PL physical warehouse stock drift, executes automated
+  revenue unlock for safe hidden stock, and suspends for human verification on
+  dangerous ghost inventory.
+value:
+  modules:
+    - id: fetch_inventory
+      summary: Step 1 - Simultaneous Parallel Stock Fetch & WMS Circuit Breaker
+      value:
+        type: script
+        input_transforms:
+          batch_size:
+            type: javascript
+            expr: flow_input.batch_size || 50
+          max_retries:
+            type: static
+            value: 3
+          simulate_wms_outage:
+            type: javascript
+            expr: flow_input.simulate_wms_outage || false
+          target_skus:
+            type: javascript
+            expr: flow_input.target_skus
+        path: f/ecom_inventory_recon/fetch_parallel_stock
+    - id: deterministic_brain
+      summary: Step 2 - Deterministic Brain & Scoring Algorithm
+        (f/ecom_inventory_recon/quaint_script)
+      value:
+        type: script
+        input_transforms:
+          audit_items:
+            type: javascript
+            expr: results.fetch_inventory.items
+          is_lockdown:
+            type: javascript
+            expr: flow_input.is_lockdown || false
+          run_id:
+            type: javascript
+            expr: flow_input.run_id
+          transit_margin_pct:
+            type: javascript
+            expr: flow_input.transit_margin_pct || 0.02
+        path: f/ecom_inventory_recon/quaint_script
+    - id: auto_sync_hidden_stock
+      summary: Step 3 - Auto-Execute Storefront Increase for Safe Hidden Stock (State B)
+      value:
+        type: script
+        input_transforms:
+          call_n8n_remote:
+            type: static
+            value: true
+          mutations:
+            type: javascript
+            expr: results.deterministic_brain.auto_execute_mutations
+          run_id:
+            type: javascript
+            expr: results.deterministic_brain.summary.run_id
+        path: f/ecom_inventory_recon/execute_tool_mutation
+      stop_after_if:
+        expr: results.deterministic_brain.summary.needs_human_approval === false
+        skip_if_stopped: true
+    - id: suspend_for_warehouse_count
+      summary: Step 4 - Suspension Protocol for Human Truth (State C Ghost Stock Danger)
+      value:
+        type: script
+        input_transforms:
+          mutations:
+            type: javascript
+            expr: results.deterministic_brain.ghost_stock_approval_queue
+          run_id:
+            type: javascript
+            expr: results.deterministic_brain.summary.run_id
+        path: f/ecom_inventory_recon/execute_tool_mutation
+      suspend:
+        required_events: 1
+        resume_form:
+          schema:
+            type: object
+            properties:
+              approval_notes:
+                type: string
+                description: Physical count notes
+                default: Aisles verified. Ready to synchronize.
+              approver_email:
+                type: string
+                description: Warehouse Manager Email
+                default: warehouse_manager@store.com
+              physical_counts:
+                type: object
+                description: Verified physical count for each bin aisle
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  order:
+    - target_skus
+    - is_lockdown
+    - transit_margin_pct
+    - simulate_wms_outage
+  properties:
+    batch_size:
+      type: integer
+      description: Concurrency batch size
+      default: 50
+    is_lockdown:
+      type: boolean
+      description: Flash Sale Lock (Reflex 2) - freezes downward inventory mutations
+      default: false
+    run_id:
+      type: string
+      description: Optional run identifier
+    simulate_wms_outage:
+      type: boolean
+      description: Simulate 3PL WMS 503 outage (Reflex 1)
+      default: false
+    target_skus:
+      type: array
+      description: Target SKUs selected by the n8n heuristic sensor
+      default:
+        - SHOE-AIR-001
+        - APP-HOOD-BLK-L
+        - SHOE-BOOT-101
+        - HOME-LINEN-QUILT-01
+        - ELEC-MAG-CHRG-02
+      items:
+        type: string
+    transit_margin_pct:
+      type: number
+      description: In-transit tolerance margin (State D)
+      default: 0.02

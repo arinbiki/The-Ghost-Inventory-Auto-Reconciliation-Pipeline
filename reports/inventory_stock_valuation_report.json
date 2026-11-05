@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-11-05T16:11:21.456062",
+  "total_catalog_skus": 100,
+  "total_physical_warehouse_units": 14037,
+  "total_storefront_advertised_units": 14404,
+  "warehouse_physical_retail_valuation": 1374499.35,
+  "warehouse_physical_cogs_valuation": 472708.5,
+  "hidden_stock_revenue_locked": 99426.99,
+  "phantom_ghost_stock_at_risk_units": 1463,
+  "phantom_ghost_stock_at_risk_revenue": 119605.55,
+  "state_breakdown": {
+    "state_a_perfect_match": 40,
+    "state_b_safe_hidden": 25,
+    "state_c_ghost_danger": 25,
+    "state_d_transit_noise": 10
+  }
+}

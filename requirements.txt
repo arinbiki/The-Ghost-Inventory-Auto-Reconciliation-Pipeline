@@ -1,0 +1,4 @@
+# The Ghost Inventory Auto-Reconciliation Pipeline Dependencies
+urllib3>=2.0.0
+pytest>=7.0.0
+
